@@ -1,7 +1,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "Circle.h"
-#include "NodeList.h"
+#include "Node.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -16,8 +16,12 @@ class HW02App : public AppBasic {
 	void prepareSettings(Settings* settings);
 
 private:
+	Node* last;
+	Node* start;
 	static const int appWidth = 800;
 	static const int appHeight = 600;
+	Circle* c1;
+	Circle* c2;
 };
 
 void HW02App::prepareSettings(Settings* settings){
@@ -26,7 +30,21 @@ void HW02App::prepareSettings(Settings* settings){
 }
 void HW02App::setup()
 {
-	
+	//Make Circles!
+	c1 = new Circle(Vec2f(50.0, 50.0), 10);
+	c2 = new Circle(Vec2f(100.0, 100.0), 10);
+
+	//Node list
+	start = NULL;
+	last = NULL;
+
+	for(int i = 0; i < 2; i++){
+		start = new Node(start*, c1);
+		start -> next = start;
+		
+		  
+	}
+
 }
 
 void HW02App::mouseDown( MouseEvent event )
@@ -44,7 +62,6 @@ void HW02App::update()
 void HW02App::draw()
 {
 	
-
 
 }
 

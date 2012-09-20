@@ -8,7 +8,7 @@ class Circle{
 public:
 
 	Circle(Vec2f c, int r);
-
+	Circle();
 	void draw();
 
 private:
