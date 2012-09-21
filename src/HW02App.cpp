@@ -1,3 +1,19 @@
+/**
+  *
+  *CSE 274 B
+  *@author Heather Horne
+  *
+  *
+  *Right now all the classes are in this .cpp, I will try to 
+  * fix this later. It includes the node class as well as the 
+  * circle class.
+  *
+  *
+  *
+  **/
+
+
+
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 //#include "Node.h"
@@ -7,6 +23,9 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+/**
+Circle Class
+**/
 class Circle{
 public:
 
@@ -25,6 +44,9 @@ Circle::Circle(int x1, int y1, int r){
 	radius = r;
 }
 
+/**
+Node Class
+**/
 class Node{
 public:
 	Node* prev;
@@ -33,7 +55,9 @@ public:
 
 };
 
-
+/**
+HW02App
+**/
 class HW02App:public AppBasic {
   public:
 	void setup();
@@ -60,15 +84,17 @@ void HW02App::setup()
 	Circle* c1 = new Circle(100, 100, 10);
 	Circle* c2 = new Circle(50, 50, 10);
 
-	//Node list
+	//Doubly Circular Node list
 	sentinel = new Node();
 	sentinel -> next = sentinel;
 	sentinel -> prev = sentinel;
-	addToList(sentinel, c1);
+	addToList(sentinel, c1); 
 	addToList(sentinel, c2);
 	
 }
+
 void HW02App::addToList(Node* sent, Circle* c){
+	//Add each new node after sentinel
 	Node* n = new Node();
 	n -> data = c;
 	n -> next = sent->next;
