@@ -30,7 +30,7 @@ class Circle{
 public:
 
 	Circle(int x1, int y1, int r);
-	void draw();
+	void draw(Color8u c);
 
 private:
 	int x, y;
@@ -44,8 +44,9 @@ Circle::Circle(int x1, int y1, int r){
 	radius = r;
 }
 
-void Circle::draw(){
+void Circle::draw(Color8u c){
 	gl::drawSolidCircle(Vec2f(x, y), radius);
+	gl::color(c);
 }
 
 
@@ -86,8 +87,8 @@ void HW02App::prepareSettings(Settings* settings){
 void HW02App::setup()
 {
 	//Make Circles!
-	Circle* c1 = new Circle(100, 100, 10);
-	Circle* c2 = new Circle(50, 50, 10);
+	Circle* c1 = new Circle(100, 100, 50);
+	Circle* c2 = new Circle(50, 50, 50);
 
 	//Doubly Circular Node list
 	sentinel = new Node();
@@ -127,8 +128,8 @@ void HW02App::update()
 
 void HW02App::draw()
 {
-	sentinel ->next->data->draw();
-	sentinel ->prev->data->draw();
+	sentinel ->next->data->draw(Color8u(255, 0, 0));
+	sentinel ->prev->data->draw(Color8u(0, 255, 0));
 	
 }
 
