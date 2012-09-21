@@ -40,9 +40,14 @@ private:
 
 Circle::Circle(int x1, int y1, int r){
 	x = x1;
-	y =y1;
+	y = y1;
 	radius = r;
 }
+
+void Circle::draw(){
+	gl::drawSolidCircle(Vec2f(x, y), radius);
+}
+
 
 /**
 Node Class
@@ -91,6 +96,7 @@ void HW02App::setup()
 	addToList(sentinel, c1); 
 	addToList(sentinel, c2);
 	
+	
 }
 
 void HW02App::addToList(Node* sent, Circle* c){
@@ -98,7 +104,7 @@ void HW02App::addToList(Node* sent, Circle* c){
 	Node* n = new Node();
 	n -> data = c;
 	n -> next = sent->next;
-	n ->prev = sent;
+	n -> prev = sent;
 	sentinel->next->prev = n;
 	sentinel->next = n;	
 		
@@ -121,7 +127,8 @@ void HW02App::update()
 
 void HW02App::draw()
 {
-
+	sentinel ->next->data->draw();
+	sentinel ->prev->data->draw();
 	
 }
 
