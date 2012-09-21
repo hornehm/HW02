@@ -8,6 +8,9 @@
   * fix this later. It includes the node class as well as the 
   * circle class.
   *
+  *I would eventually like to use my shapes from homework 1, but I 
+  * want to make sure I am getting the feel for this project 
+  * before I do that.
   *
   *
   **/
@@ -76,6 +79,7 @@ private:
 	static const int appWidth = 800;
 	static const int appHeight = 600;
 	Node* sentinel;
+	Node* current;
 	void addToList(Node* sent, Circle* c);
 };
 
@@ -92,6 +96,7 @@ void HW02App::setup()
 
 	//Doubly Circular Node list
 	sentinel = new Node();
+	current = new Node();
 	sentinel -> next = sentinel;
 	sentinel -> prev = sentinel;
 	addToList(sentinel, c1); 
@@ -128,9 +133,12 @@ void HW02App::update()
 
 void HW02App::draw()
 {
-	sentinel ->next->data->draw(Color8u(255, 0, 0));
-	sentinel ->prev->data->draw(Color8u(0, 255, 0));
-	
+	//Used logic from Professor Brinkman's CSE 274 class
+	current = sentinel->next;
+	while(current != sentinel){
+		current->data->draw(Color8u(255, 0, 0));
+		current = current->next;
+	}
 }
 
 
