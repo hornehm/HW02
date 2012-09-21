@@ -1,18 +1,12 @@
-#include "cinder\gl\gl.h"
-
-using namespace ci;
-using namespace ci::app;
-using namespace std;
-
 class Circle{
 public:
 
-	Circle(Vec2f c, int r);
-	Circle();
+	Circle(int x1, int y1, int r);
 	void draw();
 
 private:
-	Vec2f center;
+	int x, y;
 	int radius;
 
 };
+

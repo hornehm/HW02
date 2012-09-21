@@ -1,15 +1,18 @@
+#include "cinder/gl/gl.h"
+#include "cinder/app/AppBasic.h"
 #include "Circle.h"
 
-Circle::Circle(Vec2f c, int r){
-	center = c;
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
+Circle::Circle(int x1, int y1, int r){
+	x = x1;
+	y =y1;
 	radius = r;
 }
 
-Circle::Circle(){
-	center = Vec2f(0.0, 0.0);
-	radius = 0;
-}
 
 void Circle::draw(){
-	gl::drawSolidCircle(center, radius);
+	//gl::drawSolidCircle(, radius);
 }

@@ -1,5 +1,5 @@
-#include "NodeList.h"
-#include "Circle.h"
+//#include "NodeList.h"
+//#include "Circle.h"
 
 void Node::insertAfter(Node* w, Circle circ){
 	Node* tempP = new Node;

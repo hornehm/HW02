@@ -50,7 +50,6 @@ private:
 };
 
 
-
 void HW02App::prepareSettings(Settings* settings){
 	settings->setWindowSize(appWidth, appHeight);
 	settings->setResizable(false);

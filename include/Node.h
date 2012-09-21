@@ -1,20 +1,13 @@
+#include "Circle.h"
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
 class Node{
 public:
-	Node(Node* n, Circle c);
-
-	void insertAfter(Node* w, Circle circ);
-	void draw();
-
+	Node* prev;
 	Node* next;
-	Circle circ;
+	Circle* data;
+
 };
-
-
-Node::Node(Node* n, Circle c){
-	next = n;
-	circ = c;
-}
