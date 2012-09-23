@@ -17,6 +17,8 @@
 
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Texture.h"
+#include "cinder/gl/TextureFont.h"
 //#include "Node.h"
 //#include "Circle.h"
 
@@ -108,6 +110,7 @@ private:
 	void findClickedCircle(int x, int y);
 	void moveToFront(Node* n);
 	void reverseList();
+	
 };
 
 
@@ -208,8 +211,20 @@ void HW02App::mouseDown( MouseEvent event )
 }
 
 void HW02App::keyDown( KeyEvent event){
-	if(event.KEY_1){
+	Font f = Font( "Arial", 24 );
+	gl::TextureFontRef textFont;
+	if(event.getChar() == '1'){
 		reverseList();
+	}
+	if(event.getChar()== '2'){
+		//Lucy's code from CSE 274
+		// Move elsewhere
+			textFont = gl::TextureFont::create(f);
+			std::string str("Press '1' to reverse the rectangles");
+			gl::color(Color8u(255, 0, 0));
+			gl::enableAlphaBlending();
+			Rectf boundsRect( 40, textFont->getAscent() + 40, getWindowWidth() - 40, getWindowHeight() - 40 );
+			textFont ->drawStringWrapped(str, boundsRect);
 	}
 }
 
