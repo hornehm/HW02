@@ -158,7 +158,7 @@ public:
 	//Draw all the data (circles)
 	void drawAll(uint8_t* dataArr);
 
-	//Move node to front of list. This did not work for me.
+	//Move node to front of list. Used for selecting the circle to draw with
 	void moveToFront(Node* n);
 
 	//Find clicked circle. This did not work for me either. I did not
@@ -211,6 +211,9 @@ void DoubleLinkedList::updateAll(){
 	}
 
 }
+
+//The first one added is the end of the list.
+// Each new node added becomes the head of the list.
 void DoubleLinkedList::addToList(Circle* c){
 	//Add each new node after sentinel
 	Node* n = new Node(c);
@@ -234,10 +237,10 @@ void DoubleLinkedList::reverseList(){
 }
 
 void DoubleLinkedList::drawAll(uint8_t* dataArr){
-	Node* current = sentinel->prev;
+	Node* current = sentinel->next;
 	while(current != sentinel){
 		current->data->draw(dataArr, 20);
-		current = current->prev;
+		current = current->next;
 	}
 }
 
@@ -319,19 +322,16 @@ void HW02App::setup()
 
 	//Make Circles!
 	Circle* c1 = new Circle(200, 300, 50.0, Color8u(0, 0, 255));
-	Circle* c2 = new Circle(300, 300, 50.0, Color8u(255, 0, 0));
-	Circle* c3 = new Circle(400, 300, 50.0, Color8u(0, 255, 0));
-
+	Circle* c2 = new Circle(100, 300, 50.0, Color8u(255, 0, 0));
+	Circle* c3 = new Circle(300, 300, 50.0, Color8u(0, 255, 0));
+	Circle* c4 = new Circle(400, 300, 50.0, Color8u(255, 255, 255));
+	
 	//Doubly Circular Node list
 	list = new DoubleLinkedList();
-	/*
-	list->addToList(list->sentinel, c1);
-	list->addToList(list->sentinel->next, c2);
-	list->addToList(list->sentinel->next->next, c3);
-	*/
 	list->addToList(c1);
 	list->addToList(c2);
 	list->addToList(c3);
+	list->addToList(c4);
 
 	//Set controls to true to show them
 	controls = true;
@@ -353,11 +353,8 @@ void HW02App::mouseDown( MouseEvent event )
 {
 	int x1 = 0,  y1 = 0;
 	if(event.isLeftDown()){
-		//Circle* c = new Circle(event.getX(), event.getY(), 50, Color8u(100, 0, 100));
-		//list->addToList(list->sentinel, c);
-		//list->findClickedCircle(event.getX(), event.getY());
-		x1 = (float) event.getX();
-		y1 = (float) event.getY();
+		x1 = event.getX();
+		y1 = event.getY();
 		Circle* c = new Circle(x1, y1, 50.0, Color8u(100, 0, 100));
 		list->addToList(c);
 	}
@@ -388,6 +385,9 @@ void HW02App::keyDown( KeyEvent event){
 	if(event.getChar() == 'a'){
 		list->update(4);
 	}
+	if(event.getChar() == '2'){
+		list->moveToFront(list->sentinel->prev);
+	}
 	}
 
 void HW02App::update()
@@ -400,8 +400,12 @@ void HW02App::update()
 void HW02App::draw()
 {
 	if(controls){
-		std::string str("Welcome!\nPress '?' to enter and exit control description.\nPress '1' to reverse the circles.\nUse 'w' to move a circle up."
-			 "\nUse 's' to move a circle down.\nUse 'a' to move a circle left.\nUse 'd' to move a circle right.\nUse w, a, s, or d while scrolling to make the circle move further.");
+		std::string str("Welcome! This app allows you to use circles to draw colorful backgrounds.\n\n\n\n"
+			"Press '?' to enter and exit control description.\nPress '1' to reverse the circles.\nPress '2' to select a circle"
+			" to draw with.\nPress 'w' to move a circle up."
+			 "\nPress 's' to move a circle down.\nPress 'a' to move a circle left.\nPress 'd' to move a circle right."
+			 "\nPress w, a, s, or d while scrolling to make the circle move further."
+			 "\nLeft-Click to add a purple circle!");
 		gl::color(Color8u(0, 0, 0));
 		gl::enableAlphaBlending();
 		gl::color(Color(255, 50, 50));
