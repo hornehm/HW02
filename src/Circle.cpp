@@ -1,7 +1,12 @@
 #include "circle.h"
 #include "cinder/gl/gl.h"
 
-using namespace ci;
+Circle::Circle(){
+	x = 0;
+	y = 0;
+	radius = 0;
+	color = Color8u(0, 0, 0);
+}
 
 Circle::Circle(int x1, int y1, int r, Color8u c){
 	x = x1;
@@ -31,4 +36,7 @@ void Circle::setY(int y1){
 }
 void Circle::setRadius(int r){
 	radius = r;
+}
+void Circle::setColor(Color8u c){
+	color = c;
 }

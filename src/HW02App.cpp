@@ -110,6 +110,8 @@ private:
 	void findClickedCircle(int x, int y);
 	void moveToFront(Node* n);
 	void reverseList();
+
+	bool question;
 	
 };
 
@@ -121,7 +123,7 @@ void HW02App::prepareSettings(Settings* settings){
 void HW02App::setup()
 {
 	//Make Circles!
-	Circle* c1 = new Circle(200, 300, 50, Color8u(0, 0, 255));
+	Circle* c1 = new Circle(200, 300, 50, Color8u(255, 0, 0));
 	Circle* c2 = new Circle(250, 300, 50, Color8u(255, 0, 0));
 	Circle* c3 = new Circle(300, 300, 50, Color8u(0, 255, 0));
 
@@ -133,6 +135,8 @@ void HW02App::setup()
 	addToList(c1); 
 	addToList(c2);
 	addToList(c3);
+
+	question = false;
 	
 	
 }
@@ -201,6 +205,8 @@ void HW02App::mouseDown( MouseEvent event )
 {
 	int x1 = 0,  y1 = 0;
 	if(event.isLeftDown()){
+		Circle* c = new Circle(event.getX(), event.getY(), 100, Color8u(100, 0, 100));
+		addToList(c);
 		/**
 		x1 = event.getX();
 		y1 = event.getY();
@@ -216,15 +222,26 @@ void HW02App::keyDown( KeyEvent event){
 	if(event.getChar() == '1'){
 		reverseList();
 	}
-	if(event.getChar()== '2'){
+	if(event.getChar()== '?'){
 		//Lucy's code from CSE 274
 		// Move elsewhere
+		question = !question;
+		if(question == true){
 			textFont = gl::TextureFont::create(f);
-			std::string str("Press '1' to reverse the rectangles");
+			std::string str("Press '1' to reverse the circles");
 			gl::color(Color8u(255, 0, 0));
 			gl::enableAlphaBlending();
 			Rectf boundsRect( 40, textFont->getAscent() + 40, getWindowWidth() - 40, getWindowHeight() - 40 );
 			textFont ->drawStringWrapped(str, boundsRect);
+		}
+		else{
+			textFont = gl::TextureFont::create(f);
+			std::string str("Press '1' to reverse the circles");
+			gl::color(Color8u(0, 0, 0));
+			gl::enableAlphaBlending();
+			Rectf boundsRect( 40, textFont->getAscent() + 40, getWindowWidth() - 40, getWindowHeight() - 40 );
+			textFont ->drawStringWrapped(str, boundsRect);
+		}
 	}
 }
 

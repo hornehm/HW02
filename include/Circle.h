@@ -1,13 +1,12 @@
 #pragma once
 
 #include "cinder/app/AppBasic.h"
-
 /**
 Circle Class
 **/
 class Circle{
 public:
-
+	Circle();
 	Circle(int x1, int y1, int r, Color8u c);
 	void draw();
 	int getX();
@@ -16,6 +15,7 @@ public:
 	void setX(int x1);
 	void setY(int y2);
 	void setRadius(int r);
+	void setColor(Color8u c);
 
 private:
 	int x, y;
