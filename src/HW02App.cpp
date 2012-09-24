@@ -32,51 +32,45 @@ Circle Class
 class Circle{
 public:
 
-	Circle(int x1, int y1, int r, Color8u c);
-	void draw();
-	int getX();
-	int getY();
-	int getRadius();
-	void setX(int x1);
-	void setY(int y2);
-	void setRadius(int r);
+	Circle(int x1, int y1, float r, Color8u c);
+	void draw(uint8_t* pixels, int boldness);
 
 private:
 	int x, y;
-	int radius;
+	float radius;
 	Color8u color;
+
+	static const int appWidth = 800;
+	static const int appHeight = 600;
+	static const int textureSize = 1024;
 };
 
-Circle::Circle(int x1, int y1, int r, Color8u c){
+Circle::Circle(int x1, int y1, float r, Color8u c){
 	x = x1;
 	y = y1;
 	radius = r;
 	color = c;
 }
 
-void Circle::draw(){
-	gl::drawSolidCircle(Vec2f((float)x, (float)y), (float)radius);
-	gl::color(color);
+void Circle::draw(uint8_t* pixels, int boldness){
+	float tmpRadius;
+	for(int cy = 0; cy < appHeight-1; cy++){
+		for(int cx = 0; cx < appWidth-1; cx++){
+			//See if points are on circle
+			tmpRadius = sqrt(((float)(cx-x)*(cx-x))+((float)(cy-y)*(cy-y)));
+			//If the radius is within a certain range, change 9 surrounding pixels
+			if((tmpRadius >= radius-boldness)&&(tmpRadius <= radius + boldness)){
+				for(int i = cy; i < cy+2; i++){
+					for(int j = cx; j < cx+2; j++){
+						pixels[3*(cx+cy*textureSize)] = color.r;
+						pixels[3*(cx+cy*textureSize) +1] = color.g;
+						pixels[3*(cx+cy*textureSize) +2] = color.b;
+					}
+				}
+		}
+	}
 }
-int Circle::getX(){
-	return x;
 }
-int Circle::getY(){
-	return y;
-}
-int Circle::getRadius(){
-	return radius;
-}
-void Circle::setX(int x1){
-	x = x1;
-}
-void Circle::setY(int y1){
-	y = y1;
-}
-void Circle::setRadius(int r){
-	radius = r;
-}
-
 
 /**
 Node Class
@@ -102,7 +96,7 @@ public:
 	Node* sentinel;
 	void addToList(Node* tmp, Circle* data);
 	void reverseList();
-	void drawAll();
+	void drawAll(uint8_t* dataArr);
 };
 
 DoubleLinkedList::DoubleLinkedList(){
@@ -134,10 +128,10 @@ void DoubleLinkedList::reverseList(){
 	}while(cur!=sentinel);
 }
 
-void DoubleLinkedList::drawAll(){
+void DoubleLinkedList::drawAll(uint8_t* dataArr){
 	Node* current = sentinel->next;
 	while(current != sentinel){
-		current->data->draw();
+		current->data->draw(dataArr, 20);
 		current = current->next;
 	}
 }
@@ -159,11 +153,13 @@ class HW02App:public AppBasic {
 private:
 	static const int appWidth = 800;
 	static const int appHeight = 600;
+	static const int textureSize = 1024;
 	//void findClickedCircle(int x, int y);
 	//void moveToFront(Node* n);
 	DoubleLinkedList* list;
 	bool question;
-	
+	Surface* mySurface;
+	uint8_t* dataArray;
 };
 
 
@@ -173,16 +169,9 @@ void HW02App::prepareSettings(Settings* settings){
 }
 void HW02App::setup()
 {
-	//Make Circles!
-	Circle* c1 = new Circle(200, 300, 50, Color8u(0, 0, 255));
-	Circle* c2 = new Circle(250, 300, 50, Color8u(255, 0, 0));
-	Circle* c3 = new Circle(300, 300, 50, Color8u(0, 255, 0));
+	mySurface = new Surface(textureSize, textureSize, false);
 
-	//Doubly Circular Node list
-	list = new DoubleLinkedList();
-	list->addToList(list->sentinel, c1);
-	list->addToList(list->sentinel->next, c2);
-	list->addToList(list->sentinel->next->next, c3);
+	//Make Circles!
 
 	question = false;
 	
@@ -277,6 +266,19 @@ void HW02App::keyDown( KeyEvent event){
 
 void HW02App::update()
 {
+	uint8_t* dataArray = (*mySurface).getData();
+
+	Circle* c1 = new Circle(200, 300, 50.0, Color8u(0, 0, 255));
+	Circle* c2 = new Circle(250, 300, 50.0, Color8u(255, 0, 0));
+	Circle* c3 = new Circle(300, 300, 50.0, Color8u(0, 255, 0));
+
+	//Doubly Circular Node list
+	list = new DoubleLinkedList();
+	list->addToList(list->sentinel, c1);
+	list->addToList(list->sentinel->next, c2);
+	list->addToList(list->sentinel->next->next, c3);
+
+	list->drawAll(dataArray);
 
 }
 
@@ -284,7 +286,8 @@ void HW02App::draw()
 {
 	//Used logic from Professor Brinkman's CSE 274 class
 	//Draws each item in the linked list
-	list->drawAll();
+
+	gl::draw(*mySurface);
 }
 
 
