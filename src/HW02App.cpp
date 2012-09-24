@@ -34,6 +34,9 @@ public:
 
 	Circle(int x1, int y1, float r, Color8u c);
 	void draw(uint8_t* pixels, int boldness);
+	float getRadius();
+	int getX();
+	int getY();
 
 private:
 	int x, y;
@@ -50,6 +53,16 @@ Circle::Circle(int x1, int y1, float r, Color8u c){
 	y = y1;
 	radius = r;
 	color = c;
+}
+
+float Circle::getRadius(){
+	return radius;
+}
+int Circle::getX(){
+	return x;
+}
+int Circle::getY(){
+	return y;
 }
 
 void Circle::draw(uint8_t* pixels, int boldness){
@@ -97,6 +110,8 @@ public:
 	void addToList(Node* tmp, Circle* data);
 	void reverseList();
 	void drawAll(uint8_t* dataArr);
+	void moveToFront(Node* n);
+	void findClickedCircle(int x1, int y1);
 };
 
 DoubleLinkedList::DoubleLinkedList(){
@@ -136,6 +151,35 @@ void DoubleLinkedList::drawAll(uint8_t* dataArr){
 	}
 }
 
+void DoubleLinkedList::moveToFront(Node* n){
+	n->next->prev = n->prev;
+	n->prev->next = n->next;
+	n->next = sentinel->next;
+	n->prev = sentinel;
+	sentinel->next->prev = n;
+	sentinel->next = n;
+}
+
+void DoubleLinkedList::findClickedCircle(int x1, int y1){
+	
+	int distance;
+	int rad;
+	int x, y;
+	Node* current = sentinel->next;
+	
+	while(current != sentinel){
+		rad = current->data->getRadius();
+		x = current->data->getX();
+		y = current->data->getY();
+		distance = (int)sqrt((float)(((x-x1)*(x-x1)) + ((y-y1)*(y-y1))));
+		if(distance <= rad){
+			moveToFront(current);
+			current = sentinel;
+		}
+		current = current->next;
+	}
+}
+
 
 
 /**
@@ -154,12 +198,12 @@ private:
 	static const int appWidth = 800;
 	static const int appHeight = 600;
 	static const int textureSize = 1024;
-	//void findClickedCircle(int x, int y);
-	//void moveToFront(Node* n);
 	DoubleLinkedList* list;
-	bool question;
+	bool controls;
 	Surface* mySurface;
 	uint8_t* dataArray;
+	Font f;
+	gl::TextureFontRef textFont;
 };
 
 
@@ -172,102 +216,6 @@ void HW02App::setup()
 	mySurface = new Surface(textureSize, textureSize, false);
 
 	//Make Circles!
-
-	question = false;
-	
-	
-}
-
-
-/*
-void HW02App::moveToFront(Node* n){
-	n->next->prev = n->prev;
-	n->prev->next = n->next;
-	
-	n->next = sentinel->next;
-	n->prev = sentinel;
-	sentinel->next->prev = n;
-	sentinel->next = n;
-}
-
-void HW02App::findClickedCircle(int x1, int y1){
-	
-	int distance;
-	int radius;
-	int x, y;
-	current = sentinel->prev;
-	
-	while(current != sentinel){
-
-		radius = current->data->getRadius();
-		x = current->data->getX();
-		y = current->data->getY();
-
-		distance = (int)sqrt((float)(((x-x1)*(x-x1)) - ((y-y1)*(y-y1))));
-		
-		if(distance < radius){
-			moveToFront(current);
-			current = sentinel;
-		}
-		current = current->prev;
-	}
-}
-*/
-
-void HW02App::mouseDown( MouseEvent event )
-{
-	int x1 = 0,  y1 = 0;
-	if(event.isLeftDown()){
-		Circle* c = new Circle(event.getX(), event.getY(), 50, Color8u(100, 0, 100));
-		list->addToList(list->sentinel, c);
-		/**
-		x1 = event.getX();
-		y1 = event.getY();
-		findClickedCircle(x1, y1);
-		**/
-	}
-
-}
-
-void HW02App::keyDown( KeyEvent event){
-	Font f = Font( "Arial", 24 );
-	gl::TextureFontRef textFont;
-	if(event.getChar() == '1'){
-		list->reverseList();
-	}
-	if(event.getChar()== '?'){
-		//Lucy's code from CSE 274
-		// Move elsewhere
-		question = !question;
-		if(question == true){
-			
-			textFont = gl::TextureFont::create(f);
-			std::string str("Press '1' to reverse the circles");
-			gl::color(Color8u(255, 0, 0));
-			gl::enableAlphaBlending();
-			Rectf boundsRect( 40, textFont->getAscent() + 40, getWindowWidth() - 40, getWindowHeight() - 40 );
-			textFont ->drawStringWrapped(str, boundsRect);
-			
-		}
-		else{
-			
-			textFont = gl::TextureFont::create(f);
-			std::string str("Press '1' to reverse the circles");
-			gl::color(Color8u(0, 0, 0));
-			gl::enableAlphaBlending();
-			Rectf boundsRect( 40, textFont->getAscent() + 40, getWindowWidth() - 40, getWindowHeight() - 40 );
-			textFont ->drawStringWrapped(str, boundsRect);
-			
-		}
-	}
-}
-
-
-
-void HW02App::update()
-{
-	uint8_t* dataArray = (*mySurface).getData();
-
 	Circle* c1 = new Circle(200, 300, 50.0, Color8u(0, 0, 255));
 	Circle* c2 = new Circle(250, 300, 50.0, Color8u(255, 0, 0));
 	Circle* c3 = new Circle(300, 300, 50.0, Color8u(0, 255, 0));
@@ -278,16 +226,65 @@ void HW02App::update()
 	list->addToList(list->sentinel->next, c2);
 	list->addToList(list->sentinel->next->next, c3);
 
+	controls = true;
+	f = Font( "Arial", 24 );
+	textFont = gl::TextureFont::create(f);
+}
+
+
+void HW02App::mouseDown( MouseEvent event )
+{
+	int x1 = 0,  y1 = 0;
+	if(event.isLeftDown()){
+		//Circle* c = new Circle(event.getX(), event.getY(), 50, Color8u(100, 0, 100));
+		//list->addToList(list->sentinel, c);
+		
+		list->findClickedCircle(event.getX(), event.getY());
+		
+	}
+
+}
+
+void HW02App::keyDown( KeyEvent event){
+	
+	if(event.getChar() == '1'){
+		list->reverseList();
+	}
+	if(event.getChar()== '?'){
+		//Lucy's code from CSE 274
+		// Move elsewhere
+		controls = !controls;
+			
+		}	
+
+	}
+
+
+
+
+void HW02App::update()
+{
+	uint8_t* dataArray = (*mySurface).getData();
 	list->drawAll(dataArray);
 
 }
 
 void HW02App::draw()
 {
-	//Used logic from Professor Brinkman's CSE 274 class
-	//Draws each item in the linked list
-
+	if(controls){
+		std::string str("Press '?' to enter and exit control description. Press '1' to reverse the circles");
+		gl::color(Color8u(0, 0, 0));
+		gl::enableAlphaBlending();
+		gl::color(Color(255, 50, 50));
+		Rectf boundsRect( 40, textFont->getAscent() + 40, getWindowWidth() - 40, 
+				getWindowHeight() - 40 );
+		textFont ->drawStringWrapped(str, boundsRect);
+		gl::color(Color8u(255, 255, 255));
+	}
+	else{
+	gl::clear(Color(0, 0, 0));
 	gl::draw(*mySurface);
+	}
 }
 
 
