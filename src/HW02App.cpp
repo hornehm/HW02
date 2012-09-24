@@ -37,6 +37,8 @@ public:
 	float getRadius();
 	int getX();
 	int getY();
+	void setX(int x1);
+	void setY(int y1);
 
 private:
 	int x, y;
@@ -64,6 +66,12 @@ int Circle::getX(){
 int Circle::getY(){
 	return y;
 }
+void Circle::setX(int x1){
+	x = x1;
+}
+void Circle::setY(int y1){
+	y = y1;
+}
 
 void Circle::draw(uint8_t* pixels, int boldness){
 	float tmpRadius;
@@ -81,6 +89,7 @@ void Circle::draw(uint8_t* pixels, int boldness){
 					}
 				}
 		}
+		
 	}
 }
 }
@@ -112,6 +121,8 @@ public:
 	void drawAll(uint8_t* dataArr);
 	void moveToFront(Node* n);
 	void findClickedCircle(int x1, int y1);
+	void updateAll();
+	void update(int which);
 };
 
 DoubleLinkedList::DoubleLinkedList(){
@@ -120,7 +131,31 @@ DoubleLinkedList::DoubleLinkedList(){
 	sentinel->prev = sentinel;
 }
 
+void DoubleLinkedList::update(int which){
+	if(which == 1){
+		sentinel->next->data->setY((sentinel->next->data->getY())+20);
+	}
+	if(which == 2){
+		sentinel->next->data->setY((sentinel->next->data->getY())-20);
+	}
+	if(which == 3){
+		sentinel->next->data->setX((sentinel->next->data->getX())+20);
+	}
+	else{
+		sentinel->next->data->setX((sentinel->next->data->getX())-20);
+	}
+	}
 
+
+void DoubleLinkedList::updateAll(){
+	Node* current = sentinel->next;
+	while(current != sentinel){
+		current->data->setX((current->data->getX())+1);
+		current->data->setY((current->data->getY())+1);
+		current = current->next;
+	}
+
+}
 void DoubleLinkedList::addToList(Node* tmp, Circle* c){
 	//Add each new node after sentinel
 	Node* n = new Node(c);
@@ -168,7 +203,7 @@ void DoubleLinkedList::findClickedCircle(int x1, int y1){
 	Node* current = sentinel->next;
 	
 	while(current != sentinel){
-		rad = current->data->getRadius();
+		rad = (int)(current->data->getRadius());
 		x = current->data->getX();
 		y = current->data->getY();
 		distance = (int)sqrt((float)(((x-x1)*(x-x1)) + ((y-y1)*(y-y1))));
@@ -193,7 +228,8 @@ class HW02App:public AppBasic {
 	void update();
 	void draw();
 	void prepareSettings(Settings* settings);
-	
+	void mouseDrag(MouseEvent event);	
+
 private:
 	static const int appWidth = 800;
 	static const int appHeight = 600;
@@ -232,17 +268,23 @@ void HW02App::setup()
 }
 
 
+void HW02App::mouseDrag(MouseEvent event){
+
+}
+
+
 void HW02App::mouseDown( MouseEvent event )
 {
 	int x1 = 0,  y1 = 0;
 	if(event.isLeftDown()){
 		//Circle* c = new Circle(event.getX(), event.getY(), 50, Color8u(100, 0, 100));
 		//list->addToList(list->sentinel, c);
-		
-		list->findClickedCircle(event.getX(), event.getY());
-		
+		//list->findClickedCircle(event.getX(), event.getY());
+		x1 = (float) event.getX();
+		y1 = (float) event.getY();
+		Circle* c = new Circle(x1, y1, 50.0, Color8u(100, 0, 100));
+		list->addToList(list->sentinel->next->next->next, c);
 	}
-
 }
 
 void HW02App::keyDown( KeyEvent event){
@@ -251,20 +293,26 @@ void HW02App::keyDown( KeyEvent event){
 		list->reverseList();
 	}
 	if(event.getChar()== '?'){
-		//Lucy's code from CSE 274
-		// Move elsewhere
 		controls = !controls;
-			
 		}	
-
+	if(event.getChar() == 's'){
+		list->update(1);
 	}
-
-
-
+	if(event.getChar() == 'w'){
+		list->update(2);
+	}
+	if(event.getChar() == 'd'){
+		list->update(3);
+	}
+	if(event.getChar() == 'a'){
+		list->update(4);
+	}
+	}
 
 void HW02App::update()
 {
 	uint8_t* dataArray = (*mySurface).getData();
+	//list->updateAll();
 	list->drawAll(dataArray);
 
 }
@@ -272,7 +320,8 @@ void HW02App::update()
 void HW02App::draw()
 {
 	if(controls){
-		std::string str("Press '?' to enter and exit control description. Press '1' to reverse the circles");
+		std::string str("Press '?' to enter and exit control description.\nPress '1' to reverse the circles.\nUse 'w' to move a circle up."
+			 "\nUse 's' to move a circle down.\nUse 'a' to move a circle left.\nUse 'd' to move a circle right");
 		gl::color(Color8u(0, 0, 0));
 		gl::enableAlphaBlending();
 		gl::color(Color(255, 50, 50));
