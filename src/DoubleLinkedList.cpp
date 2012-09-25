@@ -67,10 +67,10 @@ void DoubleLinkedList::reverseList(){
 }
 
 void DoubleLinkedList::drawAll(uint8_t* dataArr){
-	Node* current = sentinel->next;
+	Node* current = sentinel->prev;
 	while(current != sentinel){
 		current->data->draw(dataArr, 20);
-		current = current->next;
+		current = current->prev;
 	}
 }
 
@@ -94,7 +94,7 @@ void DoubleLinkedList::findClickedCircle(int x1, int y1){
 		rad = (int)(current->data->getRadius());
 		x = current->data->getX();
 		y = current->data->getY();
-		distance = (int)sqrt((float)(((x-x1)*(x-x1)) + ((y-y1)*(y-y1))));
+		distance = (int)sqrt((float)((x-x1)*(x-x1) + (y-y1)*(y-y1)));
 		if(distance <= rad){
 			moveToFront(current);
 			break;
