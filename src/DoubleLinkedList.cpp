@@ -97,7 +97,7 @@ void DoubleLinkedList::findClickedCircle(int x1, int y1){
 		distance = (int)sqrt((float)(((x-x1)*(x-x1)) + ((y-y1)*(y-y1))));
 		if(distance <= rad){
 			moveToFront(current);
-			current = sentinel;
+			break;
 		}
 		current = current->next;
 	}

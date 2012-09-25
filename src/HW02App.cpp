@@ -99,13 +99,19 @@ void HW02App::mouseScroll(MouseEvent event){
 
 void HW02App::mouseDown( MouseEvent event )
 {
-	int x1 = 0,  y1 = 0;
+
+	int x1 = event.getX();
+	int	y1 = event.getY();
+
 	if(event.isLeftDown()){
-		x1 = event.getX();
-		y1 = event.getY();
 		Circle* c = new Circle(x1, y1, 50.0, Color8u(100, 0, 100));
 		list->addToList(c);
 	}
+	else if(event.isRightDown()){
+		list->findClickedCircle(event.getX(),event.getY());
+	}
+
+
 }
 
 void HW02App::keyDown( KeyEvent event){
@@ -133,9 +139,6 @@ void HW02App::keyDown( KeyEvent event){
 	if(event.getChar() == 'a'){
 		list->update(4);
 	}
-	if(event.getChar() == '2'){
-		list->moveToFront(list->sentinel->prev);
-	}
 	}
 
 void HW02App::update()
@@ -149,7 +152,7 @@ void HW02App::draw()
 {
 	if(controls){
 		std::string str("Welcome! This app allows you to use circles to draw colorful backgrounds.\n\n\n\n"
-			"Press '?' to enter and exit control description.\nPress '1' to reverse the circles.\nPress '2' to select a circle"
+			"Press '?' to enter and exit control description.\nPress '1' to reverse the circles.\nPress Mouse-2 to select a circle"
 			" to draw with.\nPress 'w' to move a circle up."
 			 "\nPress 's' to move a circle down.\nPress 'a' to move a circle left.\nPress 'd' to move a circle right."
 			 "\nPress w, a, s, or d while scrolling to make the circle move further."
