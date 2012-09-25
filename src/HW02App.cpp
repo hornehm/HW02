@@ -7,7 +7,7 @@
   *is all in one .cpp file, but I had a hard time putting each class in their 
   *separate .cpp and .h files.
   *
-  *I've used code from Dr. Brinkman's CSE 274 Class.
+  *I've used the reverse method from Dr. Brinkman's CSE 274 Class 
   *
   **/
 
@@ -399,6 +399,7 @@ void HW02App::update()
 
 void HW02App::draw()
 {
+	//I've taken code from Lucy's and Jordan Komnick's Homework 2 project to make my text show
 	if(controls){
 		std::string str("Welcome! This app allows you to use circles to draw colorful backgrounds.\n\n\n\n"
 			"Press '?' to enter and exit control description.\nPress '1' to reverse the circles.\nPress '2' to select a circle"
