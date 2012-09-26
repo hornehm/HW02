@@ -38,7 +38,8 @@ class HW02App:public AppBasic {
 	void update();
 	void draw();
 	void prepareSettings(Settings* settings);
-	void mouseScroll(MouseEvent event);	
+	void mouseScroll(MouseEvent event);
+	void clearSurface();
 
 private:
 
@@ -141,8 +142,23 @@ void HW02App::keyDown( KeyEvent event){
 	}
 	}
 
+void HW02App::clearSurface(){
+	uint8_t* dataArray = (*mySurface).getData();
+
+	//clears background to black.
+	for(int y = 0; y < appHeight; y++){
+		for(int x = 0; x < appWidth; x++){
+			int offset = 3* (x + y*textureSize);
+			dataArray[offset] = 0;
+			dataArray[offset+1] = 0;
+			dataArray[offset+2] = 0;
+		}
+	}
+}
+
 void HW02App::update()
 {
+	clearSurface();
 	uint8_t* dataArray = (*mySurface).getData();
 	list->drawAll(dataArray);
 
