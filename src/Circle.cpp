@@ -1,23 +1,18 @@
-#include "circle.h"
-#include "cinder/gl/gl.h"
+#include "Circle.h"
+#include "cinder/app/AppBasic.h"
 
-Circle::Circle(){
-	x = 0;
-	y = 0;
-	radius = 0;
-	color = Color8u(0, 0, 0);
-}
+using namespace ci;
+using namespace std;
 
-Circle::Circle(int x1, int y1, int r, Color8u c){
+Circle::Circle(int x1, int y1, float r, Color8u c){
 	x = x1;
 	y = y1;
 	radius = r;
 	color = c;
 }
 
-void Circle::draw(){
-	gl::drawSolidCircle(Vec2f((float)x, (float)y), (float)radius);
-	gl::color(color);
+float Circle::getRadius(){
+	return radius;
 }
 int Circle::getX(){
 	return x;
@@ -25,18 +20,35 @@ int Circle::getX(){
 int Circle::getY(){
 	return y;
 }
-int Circle::getRadius(){
-	return radius;
-}
+
 void Circle::setX(int x1){
 	x = x1;
 }
 void Circle::setY(int y1){
 	y = y1;
 }
-void Circle::setRadius(int r){
+
+void Circle::setRadius(float r){
 	radius = r;
 }
-void Circle::setColor(Color8u c){
-	color = c;
+
+void Circle::draw(uint8_t* pixels, int boldness){
+	float tmpRadius;
+	for(int cy = 0; cy < appHeight-1; cy++){
+		for(int cx = 0; cx < appWidth-1; cx++){
+			//See if points are on circle
+			tmpRadius = sqrt(((float)(cx-x)*(cx-x))+((float)(cy-y)*(cy-y)));
+			//If the radius is within a certain range, change 9 surrounding pixels
+			if((tmpRadius >= radius-boldness)&&(tmpRadius <= radius + boldness)){
+				for(int i = cy; i < cy+2; i++){
+					for(int j = cx; j < cx+2; j++){
+						pixels[3*(cx+cy*textureSize)] = color.r;
+						pixels[3*(cx+cy*textureSize) +1] = color.g;
+						pixels[3*(cx+cy*textureSize) +2] = color.b;
+					}
+				}
+		}
+		
+	}
+}
 }

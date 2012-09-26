@@ -1,19 +1,8 @@
-#include "NodeList.h"
+#include "Node.h"
 #include "Circle.h"
 
-Node::Node(Node* n, Circle c){
-	next = n;
-	circ = c;
-}
-
-
-void Node::insertAfter(Node* w, Circle circ){
-	Node* tempP = new Node;
-	tempP -> data = new circ;
-	tempP -> next = w -> next;
-	w -> next = tempP;
-}
-
-void Node::draw(){
-	data* -> draw();
+Node::Node(Circle* new_data){
+	next = NULL;
+	prev = NULL;
+	data = new_data;
 }

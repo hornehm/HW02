@@ -1,0 +1,39 @@
+Hey Heather, here are some notes about your program.
+
+-The findClickedCircle method doesn't always grab the cirlce
+on the first click (may be something I did). I think that 
+this may be due to the drawing method making the circles 
+larger than they should be. I couldn't find the exact 
+reason why. However, it does work for the most part.
+
+-The drawing methods that you're using to create the surface
+make the program run slowly. It's much faster to use the 
+openGL functions to draw circles, and then you don't have to
+use a surface and cycle through each pixel.
+
+-You may want to make your class member variables with the
+trailing '_' to make them easier to identify at a glance.
+
+
+Notes:
+
+-The reason you probably weren't able to separate the classes
+is because you were using pragma once instead of 'ifndef'. I
+don't exactly know how pragma once works, but check out 'ifndef'
+on Cplusplus.com . It's basically an if-else for your preprocessor;
+saying, if this class is NOT defined already, define this class.
+
+-The clicked circle method was fine as far as I remember. Maybe 
+one instance of using next instead of previous, but you just needed
+to create a different mouse event and include the code instead of
+using the '2' keypress to cycle.
+
+-The node drawing order wasn't putting the selected circles on
+the 'top' of the list (after sentinel).
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Overall, I think this was an awesome project. It looks like you 
+were just rushed a bit at the end. I'm very impressed with the
+text instructions. I'm still having trouble figuring out 
+how you did it.
