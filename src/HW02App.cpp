@@ -15,265 +15,13 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/TextureFont.h"
-//#include "Node.h"
-//#include "Circle.h"
+#include "DoubleLinkedList.h"
+#include "Node.h"
+#include "Circle.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
-
-/**
- *Circle Class
- *
- *I used my circle draw method from homework number one. 
-**/
-class Circle{
-public:
-	//Constructor
-	Circle(int x1, int y1, float r, Color8u c);
-
-	//draw Circle
-	void draw(uint8_t* pixels, int boldness);
-
-	//Gets radius
-	float getRadius();
-
-	//Gets x
-	int getX();
-	
-	//Gets y
-	int getY();
-
-	//Sets x to x1
-	void setX(int x1);
-
-	//Sets y to y1
-	void setY(int y1);
-
-	//Sets radius to r
-	void setRadius(float r);
-
-private:
-	int x, y;
-	float radius;
-	Color8u color;
-
-	static const int appWidth = 800;
-	static const int appHeight = 600;
-	static const int textureSize = 1024;
-};
-
-Circle::Circle(int x1, int y1, float r, Color8u c){
-	x = x1;
-	y = y1;
-	radius = r;
-	color = c;
-}
-
-float Circle::getRadius(){
-	return radius;
-}
-int Circle::getX(){
-	return x;
-}
-int Circle::getY(){
-	return y;
-}
-
-void Circle::setX(int x1){
-	x = x1;
-}
-void Circle::setY(int y1){
-	y = y1;
-}
-
-void Circle::setRadius(float r){
-	radius = r;
-}
-
-void Circle::draw(uint8_t* pixels, int boldness){
-	float tmpRadius;
-	for(int cy = 0; cy < appHeight-1; cy++){
-		for(int cx = 0; cx < appWidth-1; cx++){
-			//See if points are on circle
-			tmpRadius = sqrt(((float)(cx-x)*(cx-x))+((float)(cy-y)*(cy-y)));
-			//If the radius is within a certain range, change 9 surrounding pixels
-			if((tmpRadius >= radius-boldness)&&(tmpRadius <= radius + boldness)){
-				for(int i = cy; i < cy+2; i++){
-					for(int j = cx; j < cx+2; j++){
-						pixels[3*(cx+cy*textureSize)] = color.r;
-						pixels[3*(cx+cy*textureSize) +1] = color.g;
-						pixels[3*(cx+cy*textureSize) +2] = color.b;
-					}
-				}
-		}
-		
-	}
-}
-}
-
-/**
- *Node Class
- *
- *I decided to do a double circular linked list as it seemed easier than 
- *the other ones.
-**/
-class Node{
-public:
-	Node* prev;
-	Node* next;
-	Circle* data;
-	//Constructor for Node
-	Node(Circle* new_data);
-
-};
-
-Node::Node(Circle* new_data){
-	next = NULL;
-	prev = NULL;
-	data = new_data;
-}
-
-
-/*
-*Double Linked List class
-*
-*This class helps me create my linked list and perform
-*linked list functions
-*/
-class DoubleLinkedList{
-public:
-	//Default Constructor
-	DoubleLinkedList();
-
-	//Sentinel to keep track of list
-	Node* sentinel;
-
-	//Add nodes to list with Circle data
-	void addToList(Circle* data);
-
-	//Reverse the list so that the last item is first and vice versa
-	void reverseList();
-
-	//Draw all the data (circles)
-	void drawAll(uint8_t* dataArr);
-
-	//Move node to front of list. Used for selecting the circle to draw with
-	void moveToFront(Node* n);
-
-	//Find clicked circle. This did not work for me either. I did not
-	// have enough time to find the bug that was causing it to freeze.
-	void findClickedCircle(int x1, int y1);
-
-	//Update the data for each node
-	void updateAll();
-
-	//Update according to what will be updated on the sentinel->next node
-	void update(int which);
-};
-
-DoubleLinkedList::DoubleLinkedList(){
-	sentinel = new Node(NULL);
-	sentinel->next = sentinel;
-	sentinel->prev = sentinel;
-}
-
-void DoubleLinkedList::update(int which){
-	//Moves up
-	if(which == 1){
-		sentinel->next->data->setY((sentinel->next->data->getY())+20);
-	}
-	//Moves back
-	if(which == 2){
-		sentinel->next->data->setY((sentinel->next->data->getY())-20);
-	}
-	//Moves right
-	if(which == 3){
-		sentinel->next->data->setX((sentinel->next->data->getX())+20);
-	}
-	//Moves left
-	if(which == 4){
-		sentinel->next->data->setX((sentinel->next->data->getX())-20);
-	}
-	//Makes it jump?
-	if(which == 5){
-		sentinel->next->data->setRadius((sentinel->next->data->getRadius())+100);
-	}
-	}
-
-
-void DoubleLinkedList::updateAll(){
-	Node* current = sentinel->next;
-	while(current != sentinel){
-		current->data->setX((current->data->getX())+1);
-		current->data->setY((current->data->getY())+1);
-		current = current->next;
-	}
-
-}
-
-//The first one added is the end of the list.
-// Each new node added becomes the head of the list.
-void DoubleLinkedList::addToList(Circle* c){
-	//Add each new node after sentinel
-	Node* n = new Node(c);
-	n -> next = sentinel->next;
-	n -> prev = sentinel;
-	sentinel->next->prev = n;
-	sentinel->next = n;		
-}
-
-/*
-*Syntax and logic from CSE 274
-*/
-void DoubleLinkedList::reverseList(){
-	Node* cur= sentinel;
-	do{
-		Node* tmp = cur->next;
-		cur->next=cur->prev;
-		cur->prev = tmp;
-		cur = cur->prev;
-	}while(cur!=sentinel);
-}
-
-void DoubleLinkedList::drawAll(uint8_t* dataArr){
-	Node* current = sentinel->next;
-	while(current != sentinel){
-		current->data->draw(dataArr, 20);
-		current = current->next;
-	}
-}
-
-void DoubleLinkedList::moveToFront(Node* n){
-	n->next->prev = n->prev;
-	n->prev->next = n->next;
-	n->next = sentinel->next;
-	n->prev = sentinel;
-	sentinel->next->prev = n;
-	sentinel->next = n;
-}
-
-void DoubleLinkedList::findClickedCircle(int x1, int y1){
-	
-	int distance;
-	int rad;
-	int x, y;
-	Node* current = sentinel->next;
-	
-	while(current != sentinel){
-		rad = (int)(current->data->getRadius());
-		x = current->data->getX();
-		y = current->data->getY();
-		distance = (int)sqrt((float)(((x-x1)*(x-x1)) + ((y-y1)*(y-y1))));
-		if(distance <= rad){
-			moveToFront(current);
-			current = sentinel;
-		}
-		current = current->next;
-	}
-}
-
-
 
 /**
 *HW02App
@@ -290,7 +38,8 @@ class HW02App:public AppBasic {
 	void update();
 	void draw();
 	void prepareSettings(Settings* settings);
-	void mouseScroll(MouseEvent event);	
+	void mouseScroll(MouseEvent event);
+	void clearSurface();
 
 private:
 
@@ -351,13 +100,19 @@ void HW02App::mouseScroll(MouseEvent event){
 
 void HW02App::mouseDown( MouseEvent event )
 {
-	int x1 = 0,  y1 = 0;
+
+	int x1 = event.getX();
+	int	y1 = event.getY();
+
 	if(event.isLeftDown()){
-		x1 = event.getX();
-		y1 = event.getY();
 		Circle* c = new Circle(x1, y1, 50.0, Color8u(100, 0, 100));
 		list->addToList(c);
 	}
+	else if(event.isRightDown()){
+		list->findClickedCircle(event.getX(),event.getY());
+	}
+
+
 }
 
 void HW02App::keyDown( KeyEvent event){
@@ -385,13 +140,25 @@ void HW02App::keyDown( KeyEvent event){
 	if(event.getChar() == 'a'){
 		list->update(4);
 	}
-	if(event.getChar() == '2'){
-		list->moveToFront(list->sentinel->prev);
 	}
+
+void HW02App::clearSurface(){
+	uint8_t* dataArray = (*mySurface).getData();
+
+	//clears background to black.
+	for(int y = 0; y < appHeight; y++){
+		for(int x = 0; x < appWidth; x++){
+			int offset = 3* (x + y*textureSize);
+			dataArray[offset] = 0;
+			dataArray[offset+1] = 0;
+			dataArray[offset+2] = 0;
+		}
 	}
+}
 
 void HW02App::update()
 {
+	clearSurface();
 	uint8_t* dataArray = (*mySurface).getData();
 	list->drawAll(dataArray);
 
@@ -402,7 +169,7 @@ void HW02App::draw()
 	//I've taken code from Lucy's and Jordan Komnick's Homework 2 project to make my text show
 	if(controls){
 		std::string str("Welcome! This app allows you to use circles to draw colorful backgrounds.\n\n\n\n"
-			"Press '?' to enter and exit control description.\nPress '1' to reverse the circles.\nPress '2' to select a circle"
+			"Press '?' to enter and exit control description.\nPress '1' to reverse the circles.\nPress Mouse-2 to select a circle"
 			" to draw with.\nPress 'w' to move a circle up."
 			 "\nPress 's' to move a circle down.\nPress 'a' to move a circle left.\nPress 'd' to move a circle right."
 			 "\nPress w, a, s, or d while scrolling to make the circle move further."
